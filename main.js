@@ -35,6 +35,8 @@ var fs = require("fs");
 var path = require("path");
 var ext = [".mp3"];
 var songArray = [];
+var radioArray = [];
+var playCount = 8;
 
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
@@ -52,30 +54,53 @@ bot.on("ready", function() {
         }
     });
 
+    fs.readdir("./songs/radio", function(err, dirContents) {
+        for (var i = 0; i < dirContents.length; i++) {
+            for (var o = 0; o < ext.length; o++) {
+                if (path.extname(dirContents[i]) === ext[o]) {
+                    radioArray.push(dirContents[i]);
+                    console.log("Adding radio " + dirContents[i]);
+                }
+            }
+        }
+    });
+
     setInterval(function() {
          if (bot.voiceConnection.playing === false) {
-            console.log("Playing is false");
+            if (playCount === 8) {
+                console.log("Play count is 8, play radio track");
 
-            var random = Math.floor(Math.random() * ((songArray.length - 1 + 1) - 1));
-            console.log("Random number is " + random);
-
-            var connection = bot.voiceConnection;
-
-            //connection.stopPlaying();
-            connection.playFile("./songs/" + random + ".mp3", {"volume": 1});
+                var random = Math.floor(Math.random() * ((radioArray.length - 1 + 1) + 1));
+                var connection = bot.voiceConnection;
                 
-            id3js({file: "./songs/" + random + ".mp3", type: id3js.OPEN_LOCAL}, function(err, tags) {
-                bot.setPlayingGame(tags.title);
-                console.log("Playing " + tags.title);
-            });
+                console.log("Playing radio track " + random);
+
+                connection.playFile("./songs/radio/" + random + ".mp3", {"volume": 1});
+
+                bot.setPlayingGame("some slick beats!");
+
+                playCount = 0;
+            }
+            else {
+               console.log("Playing is false");
+
+               var random = Math.floor(Math.random() * ((songArray.length - 1 + 1) + 1));
+               console.log("Random number is " + random);
+
+               var connection = bot.voiceConnection;
+
+               //connection.stopPlaying();
+               connection.playFile("./songs/" + random + ".mp3", {"volume": 1});
+                
+                id3js({file: "./songs/" + random + ".mp3", type: id3js.OPEN_LOCAL}, function(err, tags) {
+                   bot.setPlayingGame(tags.title);
+                   console.log("Playing " + tags.title);
+                });
+
+                playCount++;
+            }
         }
     }, 500)
-});
-
-bot.on("message", function(msg) {
-    //while(bot.voiceConnection) {
-       
-    //}
 });
 
 bot.login(authDetails.username, authDetails.password);
