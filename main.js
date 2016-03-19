@@ -27,3 +27,5 @@ var bot = new discord.Client();
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
 })
+
+bot.login(authDetails.username, authDetails.password);
