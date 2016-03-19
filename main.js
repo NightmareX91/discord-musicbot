@@ -26,6 +26,24 @@ var bot = new discord.Client();
 
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
-})
+    bot.setPlayingGame("some slick beats!");
+    bot.joinVoiceChannel(serverDetails.voicechannel);
+});
+
+bot.on("message", function(msg) {
+    if (msg.content === ">>>play") {
+        if (bot.voiceConnection) {
+            var connection = bot.voiceConnection;
+
+            try {
+                connection.stopPlaying();
+                connection.playFile("./01. Can You Forgive Her.mp3", {"volume": 1});
+            }
+            catch (e) {
+                console.log("Something went wrong.");
+            }
+        }
+    }
+});
 
 bot.login(authDetails.username, authDetails.password);
