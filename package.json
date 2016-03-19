@@ -1,18 +1,19 @@
 {
-    "name": "Discord-MusicBot",
-    "version": "0.0.1",
-    "description": "A music bot for Discord",
-    "author": "meanwhile (meanwhile.rocks)",
-    "main": "main.js",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/NightmareX91/discord-musicbot"
-    },
-    "bugs": {
-        "url": "https://github.com/NightmareX91/discord-musicbot/issues"
-    },
-    "dependencies": {
-        "discord.js": "^6.0.0"
-    }
+  "name": "Discord-MusicBot",
+  "version": "0.0.1",
+  "description": "A music bot for Discord",
+  "author": "meanwhile (meanwhile.rocks)",
+  "main": "main.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NightmareX91/discord-musicbot"
+  },
+  "bugs": {
+    "url": "https://github.com/NightmareX91/discord-musicbot/issues"
+  },
+  "dependencies": {
+    "discord.js": "^6.0.0",
+    "id3js": "^1.1.3"
+  }
 }
