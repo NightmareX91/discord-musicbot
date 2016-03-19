@@ -35,14 +35,11 @@ var fs = require("fs");
 var path = require("path");
 var ext = [".mp3"];
 var songArray = [];
-var connected = false;
 
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
     //bot.setPlayingGame("some slick beats!");
-    bot.joinVoiceChannel(serverDetails.voicechannel, function(err) {
-        connected = true
-    });
+    bot.joinVoiceChannel(serverDetails.voicechannel);
     
     fs.readdir("./songs", function(err, dirContents) {
         for (var i = 0; i < dirContents.length; i++) {
