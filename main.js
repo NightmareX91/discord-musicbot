@@ -7,6 +7,14 @@ catch (e) {
 }
 
 try {
+    var id3js = require("id3js");
+}
+catch (e) {
+    console.log("Please run npm install and ensure it passes with no errors!");
+    process.exit();
+}
+
+try {
     var authDetails = require("./auth.json");
 }
 catch (e) {
@@ -23,21 +31,46 @@ catch (e) {
 }
 
 var bot = new discord.Client();
+var fs = require("fs");
+var path = require("path");
+var ext = [".mp3"];
+var songArray = [];
 
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
-    bot.setPlayingGame("some slick beats!");
+    //bot.setPlayingGame("some slick beats!");
     bot.joinVoiceChannel(serverDetails.voicechannel);
+    
+    fs.readdir("./songs", function(err, dirContents) {
+        for (var i = 0; i < dirContents.length; i++) {
+            for (var o = 0; o < ext.length; o++) {
+                if (path.extname(dirContents[i]) === ext[o]) {
+                    songArray.push(dirContents[i]);
+                    console.log("Adding " + dirContents[i]);
+                }
+            }
+        }
+    });
+
 });
 
 bot.on("message", function(msg) {
+    var random = Math.floor(Math.random() * ((songArray.length + 1) - 1));
+
+    console.log("Random number is " + random);
+
     if (msg.content === ">>>play") {
         if (bot.voiceConnection) {
             var connection = bot.voiceConnection;
 
             try {
                 connection.stopPlaying();
-                connection.playFile("./01. Can You Forgive Her.mp3", {"volume": 1});
+                connection.playFile("./songs/" + random + ".mp3", {"volume": 1});
+                
+                id3js({file: "./songs/" + random + ".mp3", type: id3js.OPEN_LOCAL}, function(err, tags) {
+                    bot.setPlayingGame(tags.title);
+                    console.log("Playing " + tags.title);
+                });
             }
             catch (e) {
                 console.log("Something went wrong.");
