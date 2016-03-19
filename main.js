@@ -35,11 +35,14 @@ var fs = require("fs");
 var path = require("path");
 var ext = [".mp3"];
 var songArray = [];
+var connected = false;
 
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
     //bot.setPlayingGame("some slick beats!");
-    bot.joinVoiceChannel(serverDetails.voicechannel);
+    bot.joinVoiceChannel(serverDetails.voicechannel, function(err) {
+        connected = true
+    });
     
     fs.readdir("./songs", function(err, dirContents) {
         for (var i = 0; i < dirContents.length; i++) {
@@ -52,31 +55,30 @@ bot.on("ready", function() {
         }
     });
 
+    setInterval(function() {
+         if (bot.voiceConnection.playing === false) {
+            console.log("Playing is false");
+
+            var random = Math.floor(Math.random() * ((songArray.length - 1 + 1) - 1));
+            console.log("Random number is " + random);
+
+            var connection = bot.voiceConnection;
+
+            //connection.stopPlaying();
+            connection.playFile("./songs/" + random + ".mp3", {"volume": 1});
+                
+            id3js({file: "./songs/" + random + ".mp3", type: id3js.OPEN_LOCAL}, function(err, tags) {
+                bot.setPlayingGame(tags.title);
+                console.log("Playing " + tags.title);
+            });
+        }
+    }, 500)
 });
 
 bot.on("message", function(msg) {
-    var random = Math.floor(Math.random() * ((songArray.length + 1) - 1));
-
-    console.log("Random number is " + random);
-
-    if (msg.content === ">>>play") {
-        if (bot.voiceConnection) {
-            var connection = bot.voiceConnection;
-
-            try {
-                connection.stopPlaying();
-                connection.playFile("./songs/" + random + ".mp3", {"volume": 1});
-                
-                id3js({file: "./songs/" + random + ".mp3", type: id3js.OPEN_LOCAL}, function(err, tags) {
-                    bot.setPlayingGame(tags.title);
-                    console.log("Playing " + tags.title);
-                });
-            }
-            catch (e) {
-                console.log("Something went wrong.");
-            }
-        }
-    }
+    //while(bot.voiceConnection) {
+       
+    //}
 });
 
 bot.login(authDetails.username, authDetails.password);
