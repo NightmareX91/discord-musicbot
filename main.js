@@ -116,7 +116,7 @@ bot.on("ready", function() {
 });
 
 bot.on("message", function(msg) {
-    if (msg.sender != bot.sender) {
+    if (msg.sender != bot.sender && bot.voiceConnection.playing === true) {
         if (msg.content == ">>>next") {
             if (msg.sender.voiceChannel === bot.voiceConnection.voiceChannel) {
                 var voiceUsers = bot.voiceConnection.voiceChannel.members.length;
@@ -144,6 +144,9 @@ bot.on("message", function(msg) {
         else if (msg.content == ">>>status") {
             bot.sendMessage(msg.channel, "I am currently playing " + songArtist + " - " + songTitle + "!");
         }
+    }
+    else {
+        bot.sendMessage(msg.channel, "You can't use commands if I'm not playing anything!");
     }
 });
 
