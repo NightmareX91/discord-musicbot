@@ -41,6 +41,10 @@ var nextVote = 0;
 var songName;
 var songArtist;
 
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
     //bot.setPlayingGame("some slick beats!");
@@ -73,7 +77,7 @@ bot.on("ready", function() {
             if (playCount === 8) {
                 console.log("Play count is 8, play radio track");
 
-                var random = Math.floor(Math.random() * ((radioArray.length - 1 + 1) + 1));
+                var random = randInt(1, radioArray.length);
                 var connection = bot.voiceConnection;
                 
                 console.log("Playing radio track " + random);
@@ -90,7 +94,7 @@ bot.on("ready", function() {
             else {
                 console.log("Playing is false");
 
-                var random = Math.floor(Math.random() * ((songArray.length - 1 + 1) + 1));
+                var random = randInt(1, songArray.length);
                 console.log("Random number is " + random);
 
                 var connection = bot.voiceConnection;
