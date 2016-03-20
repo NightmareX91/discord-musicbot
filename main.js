@@ -37,6 +37,9 @@ var ext = [".mp3"];
 var songArray = [];
 var radioArray = [];
 var playCount = 8;
+var nextVote = 0;
+var songName;
+var songArtist;
 
 bot.on("ready", function() {
     console.log("Ready to begin playing slick beats!");
@@ -79,28 +82,60 @@ bot.on("ready", function() {
 
                 bot.setPlayingGame("some slick beats!");
 
+                songTitle = "SlickBeats";
+                songArtist = "SlickBeats";
+
                 playCount = 0;
             }
             else {
-               console.log("Playing is false");
+                console.log("Playing is false");
 
-               var random = Math.floor(Math.random() * ((songArray.length - 1 + 1) + 1));
-               console.log("Random number is " + random);
+                var random = Math.floor(Math.random() * ((songArray.length - 1 + 1) + 1));
+                console.log("Random number is " + random);
 
-               var connection = bot.voiceConnection;
+                var connection = bot.voiceConnection;
 
-               //connection.stopPlaying();
-               connection.playFile("./songs/" + random + ".mp3", {"volume": 1});
+                //connection.stopPlaying();
+                connection.playFile("./songs/" + random + ".mp3", {"volume": 1});
                 
                 id3js({file: "./songs/" + random + ".mp3", type: id3js.OPEN_LOCAL}, function(err, tags) {
-                   bot.setPlayingGame(tags.title);
-                   console.log("Playing " + tags.title);
+                    songTitle = tags.title;
+                    songArtist = tags.artist;
+                    bot.setPlayingGame(tags.title);
+                    console.log("Playing " + tags.title);
                 });
 
                 playCount++;
             }
         }
     }, 500)
+});
+
+bot.on("message", function(msg) {
+    if (msg.sender != bot.sender) {
+        if (msg.content == ">>>next") {
+            var voiceUsers = bot.voiceConnection.voiceChannel.members.length;
+            if (nextVote >= Math.floor(voiceUsers / 2)) {
+                bot.sendMessage(msg.channel, "Skipping this song!");
+                bot.voiceConnection.stopPlaying();
+                nextVote = 0;
+            }
+            else {
+                nextVote++;
+                if (nextVote >= Math.floor(voiceUsers / 2)) {
+                    bot.sendMessage(msg.channel, "Skipping this song!");
+                    bot.voiceConnection.stopPlaying();
+                    nextVote = 0;
+                }
+                else {
+                    bot.sendMessage(msg.channel, "Voted to skip! " + nextVote + "/" + Math.floor(voiceUsers / 2) + " votes so far!");
+                }
+            }
+        }
+        else if (msg.content == ">>>status") {
+            bot.sendMessage(msg.channel, "I am currently playing " + songArtist + " - " + songTitle + "!");
+        }
+    }
 });
 
 bot.login(authDetails.username, authDetails.password);
