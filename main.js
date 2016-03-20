@@ -118,22 +118,27 @@ bot.on("ready", function() {
 bot.on("message", function(msg) {
     if (msg.sender != bot.sender) {
         if (msg.content == ">>>next") {
-            var voiceUsers = bot.voiceConnection.voiceChannel.members.length;
-            if (nextVote >= Math.floor(voiceUsers / 2)) {
-                bot.sendMessage(msg.channel, "Skipping this song!");
-                bot.voiceConnection.stopPlaying();
-                nextVote = 0;
-            }
-            else {
-                nextVote++;
+            if (msg.sender.voiceChannel === bot.voiceConnection.voiceChannel) {
+                var voiceUsers = bot.voiceConnection.voiceChannel.members.length;
                 if (nextVote >= Math.floor(voiceUsers / 2)) {
                     bot.sendMessage(msg.channel, "Skipping this song!");
                     bot.voiceConnection.stopPlaying();
                     nextVote = 0;
                 }
                 else {
-                    bot.sendMessage(msg.channel, "Voted to skip! " + nextVote + "/" + Math.floor(voiceUsers / 2) + " votes so far!");
+                    nextVote++;
+                    if (nextVote >= Math.floor(voiceUsers / 2)) {
+                        bot.sendMessage(msg.channel, "Skipping this song!");
+                        bot.voiceConnection.stopPlaying();
+                        nextVote = 0;
+                    }
+                    else {
+                        bot.sendMessage(msg.channel, "Voted to skip! " + nextVote + "/" + Math.floor(voiceUsers / 2) + " votes so far!");
+                    }
                 }
+            }
+            else {
+                bot.sendMessage(msg.channel, "You must be in my voice channel to vote to skip!");
             }
         }
         else if (msg.content == ">>>status") {
