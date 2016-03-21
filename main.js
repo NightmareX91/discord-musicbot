@@ -40,6 +40,7 @@ var playCount = 8;
 var nextVote = 0;
 var songName;
 var songArtist;
+var lastPlayed;
 
 function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -95,7 +96,15 @@ bot.on("ready", function() {
                 console.log("Playing is false");
 
                 var random = randInt(1, songArray.length);
-                console.log("Random number is " + random);
+                if (lastPlayed !== random) {
+                    console.log("Random number is " + random);
+                    lastPlayed = random;
+                }
+                else {
+                    console.log("Repeated song, skipping");
+                    bot.voiceConnection.stopPlaying();
+                    lastPlayed = random;
+                }
 
                 var connection = bot.voiceConnection;
 
@@ -146,7 +155,7 @@ bot.on("message", function(msg) {
         }
     }
     else {
-        bot.sendMessage(msg.channel, "You can't use commands if I'm not playing anything!");
+        //bot.sendMessage(msg.channel, "You can't use commands if I'm not playing anything!");
     }
 });
 
