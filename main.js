@@ -159,4 +159,9 @@ bot.on("message", function(msg) {
     }
 });
 
+bot.on("disconnected", function () {
+    console.log("Disconnected!");
+    process.exit();
+});
+
 bot.login(authDetails.username, authDetails.password);
